@@ -12,5 +12,3 @@ export default class BlogsDisplay extends Component {
     );
   }
 }
-
-// export default BlogsDisplay;

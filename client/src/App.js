@@ -1,6 +1,8 @@
 import React, { Component } from "react";
+import BlogsDisplay from "./Component/BlogsDisplay";
+import BlogTextUpdater from "./Component/BlogTextUpdater";
+
 import "./App.css";
-import BlogsDisplay from "./component/BlogsDisplay";
 
 const URL = "https://6239ddb128bcd99f02763cfe.mockapi.io/blogs";
 
@@ -11,8 +13,9 @@ export class App extends Component {
     // id: "",
     // text: "",
     // title: "",
-    isFiltered: false,
     filteredAuthor: "All",
+    blogIdToUpdate: null,
+    blogTextToUpdate: "",
     blogsArray: [],
   };
 
@@ -31,7 +34,7 @@ export class App extends Component {
 
     const fetchedResponse = await response.json();
 
-    console.log(fetchedResponse);
+    // console.log(fetchedResponse);
 
     this.setState({
       blogsArray: fetchedResponse,
@@ -40,13 +43,48 @@ export class App extends Component {
 
   handleAuthorSelect = (event) => {
     const selectedAuthor = event.target.value;
-    const filteredBlogsArray = this.state.blogsArray.filter((element) => {
-      return element.author === selectedAuthor;
+
+    this.setState({
+      filteredAuthor: selectedAuthor,
+    });
+  };
+
+  handleSelectBlog = (e) => {
+    const blogId = e.target.value;
+    console.log(blogId);
+    const filteredBlogs = this.state.blogsArray.filter((blog) => {
+      return String(blog.id) === blogId;
+    });
+    const selectedBlog = filteredBlogs[0];
+    const blogText = selectedBlog.text;
+
+    this.setState(
+      {
+        blogIdToUpdate: blogId,
+        blogTextToUpdate: blogText,
+      },
+      () => {
+        //! console.log(this.state);
+      }
+    );
+  };
+
+  handleBlogTextUpdate = (event) => {
+    const newText = event.target.value;
+    console.log(event.target.value);
+    const mappedBlogs = this.state.blogsArray.map((blog) => {
+      const updatedBlog = blog;
+
+      if (String(blog.id) === this.state.blogIdToUpdate) {
+        console.log(updatedBlog.text);
+        updatedBlog.text = newText;
+      }
+      return blog;
     });
 
     this.setState({
-      isFiltered: true,
-      filteredAuthor: selectedAuthor,
+      blogsArray: mappedBlogs,
+      blogTextToUpdate: newText,
     });
   };
 
@@ -54,24 +92,45 @@ export class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <select className="AuthorSelect" onChange={this.handleAuthorSelect}>
-            <option>All</option>
-            {this.state.blogsArray.map(({ author }) => {
-              return <option>{author}</option>;
-            })}
-          </select>
+          <div className="author-filter">
+            <select className="AuthorSelect" onChange={this.handleAuthorSelect}>
+              <option>All</option>
+              {this.state.blogsArray.map(({ author }) => {
+                return <option value={author}>{author}</option>;
+              })}
+            </select>
+            <BlogTextUpdater
+              // key={`Blog-To-Update-${idx}`}
+              blogsProp={this.state.blogsArray}
+              selectedBlogId={this.state.blogIdToUpdate}
+              selectedBlogText={this.state.blogTextToUpdate}
+              handleSelectBlog={this.handleSelectBlog}
+              handleBlogTextUpdate={this.handleBlogTextUpdate}
+            />
+          </div>
+
+          {this.state.blogsArray.length <= 0 && (
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          )}
           <div className="BlogList">
             {this.state.blogsArray.map(
               ({ author, createdAt, id, text, title }) => {
-                return (
-                  <BlogsDisplay
-                    key={id}
-                    authorProp={author}
-                    createdAtProp={createdAt}
-                    textProp={text}
-                    titleProp={title}
-                  />
-                );
+                if (
+                  author === this.state.filteredAuthor ||
+                  this.state.filteredAuthor === "All"
+                ) {
+                  return (
+                    <BlogsDisplay
+                      key={`Blog-${id}`}
+                      authorProp={author}
+                      createdAtProp={createdAt}
+                      textProp={text}
+                      titleProp={title}
+                    />
+                  );
+                }
               }
             )}
           </div>
