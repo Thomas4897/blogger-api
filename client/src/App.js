@@ -12,19 +12,24 @@ export class App extends Component {
     blogIdToUpdate: null,
     blogTextToUpdate: "",
     blogsArray: [],
+    limit: 5,
+    page: 1,
   };
 
   componentDidMount = async () => {
-    const response = await fetch(`${URL}`, {
-      method: "GET", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "access-control-request-headers": "content-type",
-        "x-Trigger": "CORS",
-      },
-    });
+    const response = await fetch(
+      `${URL}?limit=${this.state.limit}&page=${this.state.page}`
+      // {
+      //   method: "GET", // *GET, POST, PUT, DELETE, etc.
+      //   mode: "cors",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     "access-control-request-headers": "content-type",
+      //     "x-Trigger": "CORS",
+      //   },
+      // }
+    );
 
     const fetchedResponse = await response.json();
 
@@ -87,7 +92,6 @@ export class App extends Component {
               })}
             </select>
             <BlogTextUpdater
-              // key={`Blog-To-Update-${idx}`}
               blogsProp={this.state.blogsArray}
               selectedBlogId={this.state.blogIdToUpdate}
               selectedBlogText={this.state.blogTextToUpdate}
@@ -119,8 +123,6 @@ export class App extends Component {
                       titleProp={title}
                     />
                   );
-                } else {
-                  return "Error";
                 }
               }
             )}

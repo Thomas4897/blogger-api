@@ -4,7 +4,10 @@ export default class BlogTextUpdater extends Component {
   render() {
     return (
       <div className="blog-text-updater">
-        <select onChange={this.props.handleSelectBlog}>
+        <select
+          onChange={this.props.handleSelectBlog}
+          placeholder="Choose Author"
+        >
           <option value={null}></option>
           {this.props.blogsProp.map((blog) => {
             return (
