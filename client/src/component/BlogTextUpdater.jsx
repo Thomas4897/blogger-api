@@ -5,6 +5,7 @@ export default class BlogTextUpdater extends Component {
     return (
       <div className="blog-text-updater">
         <select onChange={this.props.handleSelectBlog}>
+          <option value={null}></option>
           {this.props.blogsProp.map((blog) => {
             return (
               <option key={blog.id} value={blog.id}>
@@ -13,7 +14,7 @@ export default class BlogTextUpdater extends Component {
             );
           })}
         </select>
-        <input
+        <textarea
           className="text-to-update-input"
           value={this.props.selectedBlogText}
           onChange={this.props.handleBlogTextUpdate}

@@ -8,11 +8,6 @@ const URL = "https://6239ddb128bcd99f02763cfe.mockapi.io/blogs";
 
 export class App extends Component {
   state = {
-    // author: "",
-    // createdAt: "",
-    // id: "",
-    // text: "",
-    // title: "",
     filteredAuthor: "All",
     blogIdToUpdate: null,
     blogTextToUpdate: "",
@@ -20,7 +15,6 @@ export class App extends Component {
   };
 
   componentDidMount = async () => {
-    // console.log(userName);
     const response = await fetch(`${URL}`, {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       mode: "cors",
@@ -33,8 +27,6 @@ export class App extends Component {
     });
 
     const fetchedResponse = await response.json();
-
-    // console.log(fetchedResponse);
 
     this.setState({
       blogsArray: fetchedResponse,
@@ -51,27 +43,22 @@ export class App extends Component {
 
   handleSelectBlog = (e) => {
     const blogId = e.target.value;
-    console.log(blogId);
+
     const filteredBlogs = this.state.blogsArray.filter((blog) => {
       return String(blog.id) === blogId;
     });
     const selectedBlog = filteredBlogs[0];
     const blogText = selectedBlog.text;
 
-    this.setState(
-      {
-        blogIdToUpdate: blogId,
-        blogTextToUpdate: blogText,
-      },
-      () => {
-        //! console.log(this.state);
-      }
-    );
+    this.setState({
+      blogIdToUpdate: blogId,
+      blogTextToUpdate: blogText,
+    });
   };
 
   handleBlogTextUpdate = (event) => {
     const newText = event.target.value;
-    console.log(event.target.value);
+
     const mappedBlogs = this.state.blogsArray.map((blog) => {
       const updatedBlog = blog;
 
@@ -121,15 +108,19 @@ export class App extends Component {
                   author === this.state.filteredAuthor ||
                   this.state.filteredAuthor === "All"
                 ) {
+                  let formattedText = text.replace(/\n/g, "\n\t");
+
                   return (
                     <BlogsDisplay
                       key={`Blog-${id}`}
                       authorProp={author}
                       createdAtProp={createdAt}
-                      textProp={text}
+                      textProp={formattedText}
                       titleProp={title}
                     />
                   );
+                } else {
+                  return "Error";
                 }
               }
             )}
